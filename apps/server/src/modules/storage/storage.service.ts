@@ -1,6 +1,7 @@
-import { Storage } from '@google-cloud/storage';
-import { Injectable } from '@nestjs/common';
-import { join } from 'node:path';
+import path from "node:path";
+
+import { Storage } from "@google-cloud/storage";
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class StorageService {
@@ -8,17 +9,18 @@ export class StorageService {
   private bucket: string;
 
   constructor() {
+    // Initialize Google Cloud Storage with your credentials
     this.storage = new Storage({
-      projectId: process.env.GCP_PROJECT_ID,
-      credentials: JSON.parse(process.env.GCP_CREDENTIALS!)
+      keyFilename: path.join(process.cwd(), "../../TX_1st_Product/jobwin-dcb6ad7dd9de.json"),
+      projectId: "jobwin",
     });
-    this.bucket = process.env.GCP_STORAGE_BUCKET!;
+    this.bucket = "jobwinner-storage";
   }
 
   // Upload a file and return its public URL
   async uploadFile(file: Express.Multer.File): Promise<string> {
     const blob = this.storage.bucket(this.bucket).file(file.originalname);
-    
+
     const blobStream = blob.createWriteStream({
       resumable: false,
       metadata: {
@@ -27,9 +29,12 @@ export class StorageService {
     });
 
     return new Promise((resolve, reject) => {
-      blobStream.on("error", reject);
+      blobStream.on("error", (error) => {
+        reject(error);
+      });
       blobStream.on("finish", () => {
-        resolve(`https://storage.googleapis.com/${this.bucket}/${blob.name}`);
+        const publicUrl = `https://storage.googleapis.com/${this.bucket}/${blob.name}`;
+        resolve(publicUrl);
       });
       blobStream.end(file.buffer);
     });
