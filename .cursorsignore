@@ -1,0 +1,9 @@
+# C:\jobget\you_win\.cursorsignore
+.env
+.env.*
+node_modules
+dist
+build
+.gitignore
+.cursorrules
+.cursorsignore
