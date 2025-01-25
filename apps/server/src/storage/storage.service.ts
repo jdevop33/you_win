@@ -1,11 +1,17 @@
-import { Injectable, InternalServerErrorException, Logger, OnModuleInit } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { Storage } from "@google-cloud/storage";
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  type OnModuleInit,
+} from "@nestjs/common";
+import type { ConfigService } from "@nestjs/config";
 import { createId } from "@paralleldrive/cuid2";
 import slugify from "@sindresorhus/slugify";
-import { MinioClient, MinioService } from "nestjs-minio-client";
 import sharp from "sharp";
+import type { Multer } from "multer";
 
-import { Config } from "../config/schema";
+import type { Config } from "../config/schema";
 
 // Objects are stored under the following path in the bucket:
 // "<bucketName>/<userId>/<type>/<fileName>",
@@ -38,16 +44,15 @@ const PUBLIC_ACCESS_POLICY = {
 export class StorageService implements OnModuleInit {
   private readonly logger = new Logger(StorageService.name);
 
-  private client: MinioClient;
-  private bucketName: string;
+  private client!: Storage;
+  private bucketName!: string;
 
   constructor(
     private readonly configService: ConfigService<Config>,
-    private readonly minioService: MinioService,
   ) {}
 
   async onModuleInit() {
-    this.client = this.minioService.client;
+    this.client = new Storage();
     this.bucketName = this.configService.getOrThrow<string>("STORAGE_BUCKET");
 
     const skipBucketCheck = this.configService.getOrThrow<boolean>("STORAGE_SKIP_BUCKET_CHECK");
@@ -64,7 +69,7 @@ export class StorageService implements OnModuleInit {
     try {
       // Create a storage bucket if it doesn't exist
       // if it exists, log that we were able to connect to the storage service
-      const bucketExists = await this.client.bucketExists(this.bucketName);
+      const bucketExists = await this.client.bucket(this.bucketName).exists();
 
       if (bucketExists) {
         this.logger.log("Successfully connected to the storage service.");
@@ -75,7 +80,7 @@ export class StorageService implements OnModuleInit {
         );
 
         try {
-          await this.client.makeBucket(this.bucketName);
+          await this.client.bucket(this.bucketName).create();
         } catch {
           throw new InternalServerErrorException(
             "There was an error while creating the storage bucket.",
@@ -83,7 +88,7 @@ export class StorageService implements OnModuleInit {
         }
 
         try {
-          await this.client.setBucketPolicy(this.bucketName, bucketPolicy);
+          await this.client.bucket(this.bucketName).iam.setPolicy(JSON.parse(bucketPolicy));
         } catch {
           throw new InternalServerErrorException(
             "There was an error while applying the policy to the storage bucket.",
@@ -100,7 +105,7 @@ export class StorageService implements OnModuleInit {
   }
 
   async bucketExists() {
-    const exists = await this.client.bucketExists(this.bucketName);
+    const exists = await this.client.bucket(this.bucketName).exists();
 
     if (!exists) {
       throw new InternalServerErrorException(
@@ -141,7 +146,7 @@ export class StorageService implements OnModuleInit {
           .toBuffer();
       }
 
-      await this.client.putObject(this.bucketName, filepath, buffer, metadata);
+      await this.client.bucket(this.bucketName).file(filepath).save(buffer, { metadata });
 
       return url;
     } catch {
@@ -154,7 +159,7 @@ export class StorageService implements OnModuleInit {
     const path = `${userId}/${type}/${filename}.${extension}`;
 
     try {
-      await this.client.removeObject(this.bucketName, path);
+      await this.client.bucket(this.bucketName).file(path).delete();
       return;
     } catch {
       throw new InternalServerErrorException(
@@ -166,19 +171,29 @@ export class StorageService implements OnModuleInit {
   async deleteFolder(prefix: string) {
     const objectsList = [];
 
-    const objectsStream = this.client.listObjectsV2(this.bucketName, prefix, true);
-
-    for await (const object of objectsStream) {
-      objectsList.push(object.name);
+    const [files] = await this.client.bucket(this.bucketName).getFiles({ prefix });
+    for (const file of files) {
+      objectsList.push(file.name);
     }
 
     try {
-      await this.client.removeObjects(this.bucketName, objectsList);
+      await this.client.bucket(this.bucketName).deleteFiles({
+        prefix,
+        force: true,
+      });
       return;
     } catch {
       throw new InternalServerErrorException(
         `There was an error while deleting the folder at the specified path: ${this.bucketName}/${prefix}.`,
       );
     }
+  }
+
+  async uploadFile(file: Express.Multer.File): Promise<string> {
+    return this.uploadObject(
+      createId(), // temporary userId
+      "pictures",
+      file.buffer
+    );
   }
 }

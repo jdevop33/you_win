@@ -1,260 +1,88 @@
-# PROJECT OVERVIEW
-JobWinner: Enhanced fork of Reactive Resume focused on optimizing job applications through AI-powered tools and analytics.
-
-# PERSONALITY
-- Act as a senior full-stack developer with 10+ years experience
-- Focus on clean, maintainable code with comprehensive documentation
-- Think through performance implications before implementation
-- Break complex features into smaller, testable chunks
-- Maintain high code-to-comment ratio (1:3)
-- Avoid technical debt at all costs
-
-# TECH STACK
-Frontend:
-- Next.js (Vite)
-- React Query
-- Zustand
-- TailwindCSS
-- Clerk Auth
-- DND Kit
-- React Resizable Panels
-- React Zoom Pan Pinch
-
-Backend:
-- NestJS
-- PostgreSQL
-- Prisma ORM
-- Minio (S3 alternative)
-- Browserless (PDF generation)
-
-Optional:
-- SMTP Server (email integration)
-- GitHub/Google OAuth
-- OpenAI integration
-
-# ERROR FIXING PROCESS
-1. Write three reasoning paragraphs analyzing the error
-2. Do not jump to conclusions
-3. Consider all possible causes
-4. Document debugging steps
-5. Test solution thoroughly
-6. Update documentation
-
-# BUILDING PROCESS
-1. Start with reasoning paragraphs
-2. Break changes into atomic commits
-3. Include only necessary steps
-4. Test each component
-5. Document with clear comments
-6. Consider performance impact
-
-# Our .env variables
-DATABASE_URL="postgresql://postgres:Freedom33$@localhost:5432/job_win"
-MINIO_ROOT_USER=minioadmin
-MINIO_ROOT_PASSWORD=minioadmin
-SMTP_URL=smtp://localhost:1025
-STORAGE_BUCKET=default
-[Additional variables hidden for security]
-
-# CURRENT FILE STRUCTURE
-C:\jobget\you_win\
-├── .cursorrules                 # Main Cursor configuration file
-├── .cursorsignore              # Files to ignore in Cursor
-├── instructions\               # Specialized documentation
-│   ├── database.md            # Database schema and relationships
-│   ├── deployment.md          # GCP deployment instructions
-│   ├── architecture.md        # System architecture
-│   └── roadmap.md             # Development roadmap
-├── apps\
-│   ├── client\                # Frontend (Next.js)
-│   │   ├── src\
-│   │   │   ├── components\
-│   │   │   ├── pages\
-│   │   │   └── styles\
-│   │   │   └── services\
-│   │   └── server\                # Backend (NestJS)
-│   │       ├── src\
-│   │       │   ├── modules\
-│   │       │   ├── config\
-│   │       │   └── main.ts
-│   └── tools\
-│       └── prisma\                # Database tools
-│           ├── schema.prisma
-│           └── migrations\
-
-# GITHUB PUSH PROCESS
-1. Check current branch
-2. Review changes
-3. Write clear commit message
-4. Push to correct branch
-5. Verify CI/CD pipeline
-
-# IMPORTANT INSTRUCTIONS
-- The fewer lines of code, the better
-- Always start with reasoning paragraphs
-- Do not delete comments
-- Write comments for future AI understanding
-- Break large changes into smaller steps
-- Tag relevant files in prompts
-- Focus on MVP features first
-
-# OTHER CONTEXT
-- Enhanced version of Reactive Resume
-- Local development on Windows 11 Pro
-- PostgreSQL running locally
-- Planning GCP Cloud Run deployment
-- Adding job application tracking
-- Implementing ATS optimization
-- Email integration planned
-
-# COMMENTS
-Comments should:
-- Explain why, not just what
-- Document file locations
-- Describe component relationships
-- Include relevant context
-- Help future AI understanding
-- Maintain 1:3 code-to-comment ratio
-
-# .cursorrules for JobWinner
-
 # Project Overview:
-# JobWinner is an enhanced job application platform built on Reactive Resume, focusing on AI-powered optimization, job tracking, and analytics.
-
-# Integrations:
-# - Clerk (Authentication)
-# - Mailgun (Email)
-# - OpenAI (ATS Optimization)
-
-# Infrastructure Stack:
-# - Frontend: Next.js 15 on Vercel
-# - Backend: NestJS on Cloud Run
-# - Storage: GCP Cloud Storage
-# - Database: Cloud SQL (PostgreSQL)
-# - Auth: Clerk
-# - Email: Mailgun
-# - AI: OpenAI
-
-# Development Environment:
-# - Local: Windows 11 Pro
-# - Database: Local PostgreSQL
-# - Storage: GCP Cloud Storage (dev bucket)
-# - Auth: Clerk (dev keys)
+# JobWinner is an AI-powered job application platform forked from Reactive Resume, optimized for analytics and tracking.
 
 priority_files:
-  # Core configuration
   - apps/client/next.config.js
   - apps/server/src/main.ts
   - tools/prisma/schema.prisma
-  
-  # Frontend (Next.js 15)
-  - apps/client/src/{components,app,lib}/**
-  
-  # Backend (NestJS + Cloud Run)
-  - apps/server/src/{auth,storage,resume}/**
-  
-  # Infrastructure
   - deployment.md
   - docker-compose.yml
   - .env.example
 
+  # Frontend files (Next.js)
+  - apps/client/src/{components,app,lib,pages}/**
+
+  # Backend files (NestJS)
+  - apps/server/src/{auth,storage,resume,modules}/**
+
 ignore_files:
-  # Exclude irrelevant directories and files
   - node_modules/**
   - dist/**
   - .git/**
   - .cache/**
   - **/*.log
   - pnpm-lock.yaml
+  - **/__pycache__/**
+  - **/.DS_Store
+  - **/*.tmp
+  - **/coverage/**
 
 context_limits:
-  # Limit the scope of files Cursor processes
   max_lines: 5000
-  max_files: 150
+  max_files: 200
   file_type_limits:
     - "*.tsx": 1500
     - "*.ts": 1500
     - "*.json": 500
 
 special_instructions:
-  # Cursor-specific guidance
-  - Ensure that all frontend components in `components/**` are optimized for React Query and Zustand state management.
-  - TailwindCSS is used for styling. Ensure suggestions respect utility-first principles.
-  - Backend API routes and services are defined in `apps/server/src/**`. Prioritize these for debugging and enhancements.
-  - Prisma ORM is used for database interactions. Suggest only type-safe queries based on the schema in `prisma/schema.prisma`.
+  - Optimize frontend components for `React Query` and `Zustand`.
+  - Prioritize TailwindCSS utility-first principles in styles.
+  - Use Prisma ORM schema (`prisma/schema.prisma`) for type-safe queries.
   - Focus on scalable design patterns to prevent technical debt.
 
 coding_standards:
-  # Maintain clean and minimal code
-  - Adhere to the Airbnb JavaScript/TypeScript style guide.
-  - Ensure Prettier formatting as defined in `.prettierrc`.
-  - Write descriptive comments (1:3 code-to-comment ratio).
+  - Follow the Airbnb JavaScript/TypeScript style guide.
+  - Maintain a 1:3 code-to-comment ratio for clarity.
+  - Ensure Prettier formatting as per `.prettierrc`.
 
 error_fixing_process:
-  # Systematic approach to debugging
-  - Begin with reasoning paragraphs analyzing potential causes.
-  - Document debugging steps in detail.
-  - Provide multiple solution approaches where applicable.
-  - Test thoroughly and update documentation.
+  - Analyze potential causes before debugging.
+  - Document debugging steps.
+  - Test thoroughly and validate the solution.
 
 building_process:
-  # Systematic approach to development
-  - Start with reasoning paragraphs outlining the purpose of changes.
-  - Break down changes into atomic commits.
-  - Ensure each step is testable and documented.
+  - Break changes into atomic commits.
   - Optimize for performance and scalability.
+  - Maintain clear commit messages.
 
 documentation:
-  # Emphasize comprehensive documentation
-  - Maintain specialized markdown files for `database.md`, `deployment.md`, and `architecture.md`.
-  - Use JSDoc for functions and components to aid future AI understanding.
+  - Maintain specialized markdown files (e.g., `database.md`, `deployment.md`).
+  - Use JSDoc for documenting functions and components.
 
 comments:
-  # Guidelines for writing comments
-  - Explain why a decision was made, not just what it does.
-  - Provide context about file locations and relationships.
-  - Help future developers and AI tools understand intent and dependencies.
+  - Explain "why" and provide relevant file context.
+  - Maintain clarity for future developers and AI understanding.
 
 accessibility:
-  # Ensure a user-friendly and accessible platform
-  - Ensure interactive elements are keyboard accessible.
-  - Follow WAI-ARIA standards for enhanced accessibility.
+  - Ensure compliance with WAI-ARIA standards.
   - Provide alternative text for all non-decorative images.
 
 deployment:
-  # Deployment considerations
-  - Use GCP Cloud Run for backend deployment.
-  - Host the frontend on Vercel for optimized performance.
-  - Store user assets and documents in GCP Cloud Storage.
-  - Ensure environment variables are securely managed.
+  - Backend: GCP Cloud Run
+  - Frontend: Vercel
+  - Storage: GCP Cloud Storage
+  - Secure environment variables management.
 
 security:
-  # Security best practices
-  - Validate and sanitize all user inputs to prevent injection attacks.
-  - Use HTTPS for all communications.
-  - Regularly update dependencies to patch vulnerabilities.
-  - Restrict public access to storage buckets.
+  - Validate and sanitize all user inputs.
+  - Use HTTPS for all external communications.
+  - Audit dependencies regularly for vulnerabilities.
 
 performance:
-  # Performance optimization guidelines
-  - Use lazy loading for large components and assets.
-  - Optimize API response times with efficient database queries.
-  - Enable caching for frequently accessed data using React Query.
+  - Implement lazy loading for large components.
+  - Use React Query for caching frequently accessed resources.
 
 internationalization:
-  # Multilingual support
   - Use LinguiJS for managing translations.
   - Ensure all user-facing text is translatable.
-  - Maintain locale files in `apps/client/src/locales`.
-
-# Summary:
-# This file is designed to maximize Cursor's effectiveness by focusing on key project components, maintaining clean code practices, and emphasizing documentation and scalability.
-
-# JobWinner: Enhanced fork of Reactive Resume with AI-powered optimization
-# Tech Stack: Next.js, NestJS, PostgreSQL, React Query, Zustand, TailwindCSS
-
-# For detailed documentation, see:
-# - instructions/database.md
-# - instructions/deployment.md
-# - instructions/architecture.md
-# - instructions/roadmap.md

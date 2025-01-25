@@ -2,5 +2,11 @@
   "printWidth": 100,
   "endOfLine": "auto",
   "plugins": ["prettier-plugin-tailwindcss"],
-  "tailwindFunctions": ["cn", "cva"]
+  "tailwindFunctions": ["clsx", "cn", "twMerge"],
+  "semi": true,
+  "singleQuote": false,
+  "trailingComma": "all",
+  "tabWidth": 2,
+  "useTabs": false,
+  "tailwindConfig": "./tailwind.config.js"
 }
